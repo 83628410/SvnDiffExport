@@ -14,6 +14,9 @@ class SvnXml:
     # dist
     DIST = 'dist'
 
+    # log
+    LOG = 'log.txt'
+
     def __init__(self, svn_path, svn_revision):
         self.svn_path = svn_path
         self.svn_revision = svn_revision
@@ -45,6 +48,7 @@ class SvnXml:
 
     def copy_files(self):
         """copy file to dist"""
+        log_txt_list = []
         for index, item in enumerate(self.target_paths):
             if os.path.exists(item):
                 dist_path = self.dist_path[index]
@@ -53,9 +57,13 @@ class SvnXml:
                     os.makedirs(dist_dir)
                 shutil.copyfile(item, self.dist_path[index])
                 print('export:', item)
+                log_txt_list.append(self.paths[index])
             else:
                 print('file not found ：', item)
 
+        f = open(self.current_path + os.path.sep + self.DIST + os.path.sep + self.svn_revision + os.path.sep + self.LOG, 'w+')
+        f.write('\r\n'.join(log_txt_list))
+        f.close()
 
 @click.command()
 @click.argument('dir')
